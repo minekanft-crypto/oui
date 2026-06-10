@@ -38,20 +38,26 @@ async def on_ready():
 
 @bot.command(name='connect')
 async def connect(ctx):
+    print(f"[DEBUG] connect appelé par {ctx.author} | voice: {ctx.author.voice}")
     if not ctx.author.voice:
         await ctx.send("❌ T'es même pas en vocal frère.")
         return
 
     channel = ctx.author.voice.channel
+    print(f"[DEBUG] channel: {channel}")
 
     if ctx.guild.voice_client:
         await ctx.guild.voice_client.move_to(channel)
         await ctx.send(f"✅ Déplacé dans **{channel.name}**")
         return
 
-    await channel.connect()
-    await ctx.send(f"✅ Connecté dans **{channel.name}** – je reste là 24/7 🔒")
-
+    try:
+        await channel.connect()
+        await ctx.send(f"✅ Connecté dans **{channel.name}** 🔒")
+    except Exception as e:
+        print(f"[DEBUG] ERREUR connect: {e}")
+        await ctx.send(f"❌ Erreur : {e}")
+        
     async def keep_alive():
         while True:
             await asyncio.sleep(30)
